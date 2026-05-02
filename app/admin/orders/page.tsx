@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import OrderStatusSelect from "@/components/admin/order-status-select";
+export const dynamic = "force-dynamic";
 
 type OrderWithItems = {
   id: string;

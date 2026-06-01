@@ -24,7 +24,7 @@ export default function AdminLoginPage() {
       return;
     }
 
-    router.push("/admin/orders");
+    window.location.href = "/admin/orders";
   }
 
   return (

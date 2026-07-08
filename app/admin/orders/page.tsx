@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import OrderStatusSelect from "@/components/admin/order-status-select";
+import AdminLogoutButton from "@/components/admin/admin-logout-button";
 export const dynamic = "force-dynamic";
 
 type OrderWithItems = {
@@ -34,7 +35,10 @@ export default async function AdminOrdersPage() {
         <p className="text-sm font-semibold uppercase tracking-wide text-green-700">
           Admin
         </p>
-        <h1 className="mt-2 text-4xl font-bold text-zinc-900">Commandes</h1>
+        <div className="mt-2 flex items-center justify-between gap-4">
+  <h1 className="text-4xl font-bold text-zinc-900">Commandes</h1>
+  <AdminLogoutButton />
+</div>
         <p className="mt-3 text-zinc-600">
           Liste des commandes payées via Stripe.
         </p>

@@ -1,11 +1,8 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import ProductForm from "@/components/admin/product-form";
-import {
-  deleteProductImage,
-  uploadProductImage,
-} from "@/lib/product-image";
+import { updateProduct } from "@/actions/products/update-product";
 
 type EditProductPageProps = {
   params: Promise<{
@@ -28,82 +25,6 @@ export default async function EditProductPage({
     notFound();
   }
 
-  async function updateProduct(formData: FormData) {
-    "use server";
-
-    const currentProduct = await prisma.product.findUnique({
-      where: {
-        id,
-      },
-      select: {
-        image: true,
-      },
-    });
-
-    if (!currentProduct) {
-      throw new Error("Produit introuvable.");
-    }
-
-    const name = String(formData.get("name") ?? "").trim();
-    const slug = String(formData.get("slug") ?? "").trim();
-    const description = String(
-      formData.get("description") ?? "",
-    ).trim();
-
-    const imageEntry = formData.get("image");
-
-    const imageFile =
-      imageEntry instanceof File && imageEntry.size > 0
-        ? imageEntry
-        : null;
-
-    const image = await uploadProductImage(
-      imageFile,
-      currentProduct.image,
-    );
-
-    const priceInEuros = Number(formData.get("price"));
-    const stock = Number(formData.get("stock"));
-    const active = formData.get("active") === "on";
-
-    if (
-      !name ||
-      !slug ||
-      !description ||
-      !image ||
-      !Number.isFinite(priceInEuros) ||
-      priceInEuros < 0 ||
-      !Number.isInteger(stock) ||
-      stock < 0
-    ) {
-      throw new Error("Données du produit invalides.");
-    }
-
-    await prisma.product.update({
-      where: {
-        id,
-      },
-      data: {
-        name,
-        slug,
-        description,
-        image,
-        price: Math.round(priceInEuros * 100),
-        stock,
-        active,
-      },
-    });
-
-    const imageWasReplaced =
-      imageFile !== null && image !== currentProduct.image;
-
-    if (imageWasReplaced) {
-      await deleteProductImage(currentProduct.image);
-    }
-
-    redirect("/admin/products");
-  }
-
   return (
     <main className="mx-auto max-w-3xl px-4 py-12">
       <div className="mb-8">
@@ -124,7 +45,7 @@ export default async function EditProductPage({
       </div>
 
       <ProductForm
-        action={updateProduct}
+        action={updateProduct.bind(null, product.id)}
         submitLabel="Enregistrer les modifications"
         product={product}
       />

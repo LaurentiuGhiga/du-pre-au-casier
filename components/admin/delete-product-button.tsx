@@ -28,8 +28,14 @@ export default function DeleteProductButton({
     startTransition(async () => {
       try {
         await action();
-      } catch {
-        setError("Impossible de supprimer ce produit.");
+    } catch (error) {
+        console.error("Erreur suppression produit :", error);
+
+        setError(
+          error instanceof Error
+            ? error.message
+            : "Impossible de supprimer ce produit.",
+        );
       }
     });
   }

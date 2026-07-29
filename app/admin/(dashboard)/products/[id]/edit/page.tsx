@@ -2,7 +2,10 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import ProductForm from "@/components/admin/product-form";
-import { uploadProductImage } from "@/lib/product-image";
+import {
+  deleteProductImage,
+  uploadProductImage,
+} from "@/lib/product-image";
 
 type EditProductPageProps = {
   params: Promise<{
@@ -28,24 +31,36 @@ export default async function EditProductPage({
   async function updateProduct(formData: FormData) {
     "use server";
 
+    const currentProduct = await prisma.product.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        image: true,
+      },
+    });
+
+    if (!currentProduct) {
+      throw new Error("Produit introuvable.");
+    }
+
     const name = String(formData.get("name") ?? "").trim();
     const slug = String(formData.get("slug") ?? "").trim();
-    const description = String(formData.get("description") ?? "").trim();
-    const existingImage = String(
-      formData.get("existingImage") ?? "",
-  ).trim();
-  
-  const imageEntry = formData.get("image");
-  
-  const imageFile =
+    const description = String(
+      formData.get("description") ?? "",
+    ).trim();
+
+    const imageEntry = formData.get("image");
+
+    const imageFile =
       imageEntry instanceof File && imageEntry.size > 0
-          ? imageEntry
-          : null;
-  
-  const image = await uploadProductImage(
+        ? imageEntry
+        : null;
+
+    const image = await uploadProductImage(
       imageFile,
-      existingImage,
-  );
+      currentProduct.image,
+    );
 
     const priceInEuros = Number(formData.get("price"));
     const stock = Number(formData.get("stock"));
@@ -78,6 +93,13 @@ export default async function EditProductPage({
         active,
       },
     });
+
+    const imageWasReplaced =
+      imageFile !== null && image !== currentProduct.image;
+
+    if (imageWasReplaced) {
+      await deleteProductImage(currentProduct.image);
+    }
 
     redirect("/admin/products");
   }

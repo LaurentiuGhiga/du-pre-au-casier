@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { deleteProductImage } from "@/lib/product-image";
 import DeleteProductButton from "@/components/admin/delete-product-button";
 
 export const dynamic = "force-dynamic";
@@ -8,11 +9,35 @@ export const dynamic = "force-dynamic";
 async function deleteProduct(productId: string) {
     "use server";
 
+    const product = await prisma.product.findUnique({
+        where: {
+            id: productId,
+        },
+        select: {
+            image: true,
+        },
+    });
+
+    if (!product) {
+        throw new Error("Produit introuvable.");
+    }
+
     await prisma.product.delete({
         where: {
             id: productId,
         },
     });
+
+    if (product.image) {
+        try {
+            await deleteProductImage(product.image);
+        } catch (error) {
+            console.error(
+                "Impossible de supprimer l’image du produit dans Blob:",
+                error,
+            );
+        }
+    }
 
     revalidatePath("/admin/products");
 }
@@ -63,6 +88,7 @@ export default async function AdminProductsPage() {
                                 <th className="px-6 py-4 text-sm font-semibold text-zinc-700">
                                     Image
                                 </th>
+
                                 <th className="px-6 py-4 text-sm font-semibold text-zinc-700">
                                     Nom
                                 </th>
@@ -104,6 +130,7 @@ export default async function AdminProductsPage() {
                                             </div>
                                         )}
                                     </td>
+
                                     <td className="px-6 py-4 font-medium text-zinc-900">
                                         {product.name}
                                     </td>

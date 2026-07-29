@@ -1,4 +1,4 @@
-import { put } from "@vercel/blob";
+import { del, put } from "@vercel/blob";
 
 const MAX_IMAGE_SIZE = 4 * 1024 * 1024;
 
@@ -37,4 +37,12 @@ export async function uploadProductImage(
     });
 
     return blob.url;
+}
+
+export async function deleteProductImage(imageUrl: string) {
+    if (!imageUrl) {
+        return;
+    }
+
+    await del(imageUrl);
 }

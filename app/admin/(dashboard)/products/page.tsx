@@ -1,46 +1,10 @@
 import Link from "next/link";
-import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { deleteProductImage } from "@/lib/product-image";
 import DeleteProductButton from "@/components/admin/delete-product-button";
+import { deleteProduct } from "@/actions/products/delete-product";
 
 export const dynamic = "force-dynamic";
 
-async function deleteProduct(productId: string) {
-    "use server";
-
-    const product = await prisma.product.findUnique({
-        where: {
-            id: productId,
-        },
-        select: {
-            image: true,
-        },
-    });
-
-    if (!product) {
-        throw new Error("Produit introuvable.");
-    }
-
-    await prisma.product.delete({
-        where: {
-            id: productId,
-        },
-    });
-
-    if (product.image) {
-        try {
-            await deleteProductImage(product.image);
-        } catch (error) {
-            console.error(
-                "Impossible de supprimer l’image du produit dans Blob:",
-                error,
-            );
-        }
-    }
-
-    revalidatePath("/admin/products");
-}
 
 export default async function AdminProductsPage() {
     const products = await prisma.product.findMany({

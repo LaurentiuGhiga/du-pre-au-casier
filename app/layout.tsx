@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import SiteHeader from "@/components/layout/site-header";
+import SiteHeader from "@/components/layout/header";
 import SiteFooter from "@/components/layout/site-footer";
+import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Du Pré au Casier",
-  description: "Produse locale, proaspete, direct de la producători",
+  title: siteConfig.name,
+  description: siteConfig.description,
 };
 
 export default function RootLayout({

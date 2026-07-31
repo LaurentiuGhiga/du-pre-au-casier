@@ -1,4 +1,5 @@
-import Link from "next/link";
+import Button from "@/components/ui/button";
+import ButtonLink from "@/components/ui/button-link";
 
 type ProductFormProps = {
   action: (formData: FormData) => Promise<void>;
@@ -127,54 +128,54 @@ export default function ProductForm({
       </div>
 
       <div>
-    <label
-        htmlFor="image"
-        className="mb-2 block font-medium text-zinc-900"
-    >
-        Image du produit
-    </label>
+        <label
+          htmlFor="image"
+          className="mb-2 block font-medium text-zinc-900"
+        >
+          Image du produit
+        </label>
 
-    <input
-        id="image"
-        name="image"
-        type="file"
-        accept="image/jpeg,image/png,image/webp,image/avif"
-        required={!product}
-        className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-zinc-700 file:mr-4 file:rounded-lg file:border-0 file:bg-green-50 file:px-4 file:py-2 file:font-medium file:text-green-800 hover:file:bg-green-100"
-    />
+<input
+  id="image"
+  name="image"
+  type="file"
+  accept="image/jpeg,image/png,image/webp,image/avif"
+  required={!product}
+  className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-zinc-700 file:mr-4 file:rounded-lg file:border-0 file:bg-green-50 file:px-4 file:py-2 file:font-medium file:text-green-800 hover:file:bg-green-100"
+/>
 
-    {product?.image && (
-        <>
+{product?.image && (
+          <>
             <input
-                type="hidden"
-                name="existingImage"
-                value={product.image}
+              type="hidden"
+              name="existingImage"
+              value={product.image}
             />
 
             <div className="mt-4">
-                <p className="mb-2 text-sm font-medium text-zinc-700">
-                    Image actuelle
-                </p>
+              <p className="mb-2 text-sm font-medium text-zinc-700">
+                Image actuelle
+              </p>
 
-                <img
-                    src={product.image}
-                    alt={product.name}
-                    className="h-40 w-40 rounded-xl border border-zinc-200 object-cover"
-                />
+              <img
+                src={product.image}
+                alt={product.name}
+                className="h-40 w-40 rounded-xl border border-zinc-200 object-cover"
+              />
             </div>
-        </>
-    )}
+          </>
+        )}
 
-    <p className="mt-2 text-sm text-zinc-500">
-        Formats acceptés : JPG, PNG, WebP ou AVIF. Taille maximale : 4 Mo.
-    </p>
-
-    {product && (
-        <p className="mt-1 text-sm text-zinc-500">
-            Laissez ce champ vide pour conserver l’image actuelle.
+        <p className="mt-2 text-sm text-zinc-500">
+          Formats acceptés : JPG, PNG, WebP ou AVIF. Taille maximale : 4 Mo.
         </p>
-    )}
-</div>
+
+        {product && (
+          <p className="mt-1 text-sm text-zinc-500">
+            Laissez ce champ vide pour conserver l’image actuelle.
+          </p>
+        )}
+      </div>
 
       <label className="flex items-center gap-3">
         <input
@@ -190,19 +191,17 @@ export default function ProductForm({
       </label>
 
       <div className="flex justify-end gap-3 border-t border-zinc-200 pt-6">
-        <Link
+        <ButtonLink
           href="/admin/products"
-          className="rounded-xl border border-zinc-300 px-5 py-3 font-medium text-zinc-700 hover:bg-zinc-50"
+          variant="secondary"
+          size="lg"
         >
           Annuler
-        </Link>
+        </ButtonLink>
 
-        <button
-          type="submit"
-          className="rounded-xl bg-green-700 px-5 py-3 font-medium text-white hover:bg-green-800"
-        >
+        <Button type="submit" size="lg">
           {submitLabel}
-        </button>
+        </Button>
       </div>
     </form>
   );

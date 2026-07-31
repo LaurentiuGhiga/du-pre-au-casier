@@ -34,9 +34,29 @@ model Product {
   slug        String   @unique
   description String
   price       Int
+  priceInfo   String?
   image       String
   stock       Int      @default(0)
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  producerId String?
+  producer   Producer? @relation(fields: [producerId], references: [id])
+}
+
+model Producer {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  image       String?
+  email       String?
+  phone       String?
+  location    String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products Product[]
 }
